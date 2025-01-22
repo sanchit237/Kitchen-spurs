@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Enums\RoleEnum;
 
 class UserResource extends JsonResource
 {
@@ -20,7 +21,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'created_at' => date("d M, Y", strtotime($this->created_at)),
             'updated_at' => date("d M, Y", strtotime($this->updated_at)),
-            'role' => $this->role,
+            'role' => RoleEnum::getRoleLabel($this->role),
         ];
     }
 }
