@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CategoryController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -24,4 +26,12 @@ Route::post('/login', [UserController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [UserController::class, 'logout']);
+
+    Route::prefix('categories')->controller(CategoryController::class)->group(function () {
+        Route::post('/', 'createCategory');
+        Route::get('/', 'getCategories');
+        Route::get('{id}', 'getCategory');
+        Route::post('{id}', 'updateCategory');
+        Route::delete('{id}', 'deleteCategory');
+    });
 });
