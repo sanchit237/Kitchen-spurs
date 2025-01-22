@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CommonCategoryRequest extends FormRequest
+class CreateArticleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,14 +14,6 @@ class CommonCategoryRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
-    }
-
-
-    public function prepareForValidation()
-    {
-        $this->merge([
-            'id' => $this->route('id'),
-        ]);
     }
 
     /**
@@ -32,7 +24,11 @@ class CommonCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id" => "required|exists:categories,id",
+            "title" => "required",
+            "content" => "required",
+            "status" => "required",
+            "categoryIds" => "required|array",
+            "categoryIds.*" => "exists:categories,id"
         ];
     }
 
@@ -45,8 +41,12 @@ class CommonCategoryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            "id.required" => "The category id is required",
-            "id.exists" => "The category id does not exist",
+            "title.required" => "The article title is required",
+            "content.required" => "The article content is required",
+            "status.required" => "The article status is required",
+            "categoryIds.required" => "Category IDs are required.",
+            "categoryIds.array" => "Category IDs must be an array.",
+            "categoryIds.*.exists" => "The selected category is invalid.",
         ];
     }
 

@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ArticleController;
+
 
 
 /*
@@ -33,5 +35,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('{id}', 'getCategory');
         Route::post('{id}', 'updateCategory');
         Route::delete('{id}', 'deleteCategory');
+    });
+
+
+    Route::prefix('articles')->controller(ArticleController::class)->group(function () {
+        Route::post('/', 'createArticle');
+        Route::get('/', 'getArticles');
+        Route::get('{id}', 'getArticle');
+        Route::post('{id}', 'updateArticle');
+        Route::delete('{id}', 'deleteArticle');
     });
 });

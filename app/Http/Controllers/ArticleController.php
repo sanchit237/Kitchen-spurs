@@ -3,38 +3,50 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Category;
+use App\Models\Article;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\CategoryResource;
-use App\Http\Requests\CreateCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
-use App\Http\Requests\CommonCategoryRequest;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\CreateArticleRequest;
+use App\Http\Requests\CommonArticleRequest;
+use App\Http\Requests\UpdateArticleRequest;
+use App\Http\Resources\ArticleResource;
 
-class CategoryController extends Controller
+
+class ArticleController extends Controller
 {
-
-    public function createCategory(CreateCategoryRequest $request)
+    public function createArticle(CreateArticleRequest $request)
     {
         try {
             DB::beginTransaction();
 
-            $createCategory = Category::create([
-                "name" => $request->name,
+            $title = $request->title;
+            $content = $request->content;
+            $status = $request->status;
+            $userId = $request->userId;
+            $categoryIds = $request->categoryIds;
+
+            $createArticle = Article::create([
+                "title" => $title,
+                "content" => $content,
+                "status" => $status,
+                "user_id" => $userId,
             ]);
+
+            $createArticle->categories()->attach($categoryIds);
 
             DB::commit();
 
             return response()->json([
-                "message" => "The Todo is created successfully",
-                "data" => $createCategory
+                "message" => "The Article is created successfully",
+                "data" => $createArticle
             ], 201);
         }
         catch(Exception $e){
             DB::rollBack();
 
             return response()->json([
-                "message" => "There was an error while creating the category",
+                "message" => "There was an error while creating the article",
                 "code" => $e->getCode(),
                 "error" => $e->getMessage(),
                 "file" => $e->getFile(),
@@ -43,19 +55,18 @@ class CategoryController extends Controller
         }
     }
 
-
-    public function getCategories(Request $request)
+    public function getArticles(Request $request)
     {
         try {
-            $categories = Category::all();
+            $articles = Article::all();
 
             return response()->json([
-                "data" => CategoryResource::collection($categories),
+                "data" => ArticleResource::collection($articles),
             ], 200);
         }
         catch(Exception $e) {
             return response()->json([
-                "message" => "There was an error while fetching the categories",
+                "message" => "There was an error while fetching the articles",
                 "code" => $e->getCode(),
                 "error" => $e->getMessage(),
                 "file" => $e->getFile(),
@@ -65,18 +76,18 @@ class CategoryController extends Controller
     }
 
 
-    public function getCategory(CommonCategoryRequest $request, $id)
+    public function getArticle(CommonArticleRequest $request, $id)
     {
         try {
-            $category = Category::find($id);
+            $article = Article::find($id);
 
             return response()->json([
-                "data" => new CategoryResource($category),
+                "data" => new ArticleResource($article),
             ], 200);
         }
         catch(Exception $e) {
             return response()->json([
-                "message" => "There was an error while fetching the category",
+                "message" => "There was an error while fetching the article",
                 "code" => $e->getCode(),
                 "error" => $e->getMessage(),
                 "file" => $e->getFile(),
@@ -86,30 +97,30 @@ class CategoryController extends Controller
     }
 
 
-    public function updateCategory(UpdateCategoryRequest $request, $id)
+    public function updateArticle(UpdateArticleRequest $request, $id)
     {
         try {
             DB::beginTransaction();
 
             $categoryName = $request->name;
 
-            $category = Category::find($id);
+            $article = Article::find($id);
 
-            $category->update([
+            $article->update([
                 "name" => $categoryName,
             ]);
 
             DB::commit();
 
             return response()->json([
-                "message" => "The Category is updated successfully",
+                "message" => "The Article is updated successfully",
             ], 200);
         }
         catch(Exception $e){
             DB::rollback();
 
             return response()->json([
-                "message" => "There was an error while updating the category",
+                "message" => "There was an error while updating the article",
                 "code" => $e->getCode(),
                 "error" => $e->getMessage(),
                 "file" => $e->getFile(),
@@ -119,26 +130,26 @@ class CategoryController extends Controller
     }
 
 
-    public function deleteCategory(CommonCategoryRequest $request, $id)
+    public function deleteArticle(CommonArticleRequest $request, $id)
     {
         try {
             DB::beginTransaction();
 
-            $category = Category::find($id);
+            $article = Article::find($id);
 
-            $category->delete();
+            $article->delete();
 
             DB::commit();
 
             return response()->json([
-                "message" => "The Category is deleted successfully",
+                "message" => "The Article is deleted successfully",
             ], 200);
         }
         catch(Exception $e) {
             DB::rollBack();
 
             return response()->json([
-                "message" => "There was an error while deleting the category",
+                "message" => "There was an error while deleting the article",
                 "code" => $e->getCode(),
                 "error" => $e->getMessage(),
                 "file" => $e->getFile(),
@@ -146,5 +157,4 @@ class CategoryController extends Controller
             ], 500);
         }
     }
-
 }

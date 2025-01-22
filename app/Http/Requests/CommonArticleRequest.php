@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CommonCategoryRequest extends FormRequest
+class CommonArticleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -32,7 +32,7 @@ class CommonCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id" => "required|exists:categories,id",
+            "id" => "required|exists:articles,id",
         ];
     }
 
@@ -45,8 +45,8 @@ class CommonCategoryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            "id.required" => "The category id is required",
-            "id.exists" => "The category id does not exist",
+            "id.required" => "The Article id is required",
+            "id.exists" => "The Article id does not exist",
         ];
     }
 
