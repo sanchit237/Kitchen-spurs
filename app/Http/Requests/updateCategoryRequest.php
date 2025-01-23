@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
+use App\Enums\RoleEnum;
 
 class UpdateCategoryRequest extends FormRequest
 {
@@ -14,7 +15,7 @@ class UpdateCategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->role === RoleEnum::Admin->value;
     }
 
     public function prepareForValidation()
@@ -53,6 +54,9 @@ class UpdateCategoryRequest extends FormRequest
         ];
     }
 
+    /**
+     * Handle a failed validation attempt.
+     */
     public function failedValidation(Validator $validator)
     {
         $errors = $validator->errors();
@@ -61,5 +65,15 @@ class UpdateCategoryRequest extends FormRequest
             'message' => 'Validation failed',
             'errors' => $errors,
         ], 422));
+    }
+
+    /**
+     * Handle an authorization failure.
+     */
+    protected function failedAuthorization()
+    {
+        throw new HttpResponseException(response()->json([
+            'message' => 'You are not authorized to update a category.',
+        ], 403));
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Enums\RoleEnum;
 
 class CommonCategoryRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class CommonCategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->role === RoleEnum::Admin->value;
     }
 
 
@@ -50,7 +51,9 @@ class CommonCategoryRequest extends FormRequest
         ];
     }
 
-
+    /**
+     * Handle a failed validation attempt.
+     */
     public function failedValidation(Validator $validator)
     {
         $errors = $validator->errors();
@@ -59,5 +62,16 @@ class CommonCategoryRequest extends FormRequest
             'message' => 'Validation failed',
             'errors' => $errors,
         ], 422));
+    }
+
+
+    /**
+     * Handle an authorization failure.
+     */
+    protected function failedAuthorization()
+    {
+        throw new HttpResponseException(response()->json([
+            'message' => 'You are not authorized to delete or access a category.',
+        ], 403));
     }
 }
