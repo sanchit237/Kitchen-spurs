@@ -28,6 +28,7 @@ Route::post('/login', [UserController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [UserController::class, 'logout']);
+    Route::get('/user-roles', [UserController::class, 'userRoles']);
 
     Route::prefix('categories')->controller(CategoryController::class)->group(function () {
         Route::post('create', 'createCategory');

@@ -9,9 +9,11 @@ use App\Http\Requests\LoginUserRequest;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\UserResource;
+use App\Enums\RoleEnum;
 
 class UserController extends Controller
 {
+    //Logs in the user and returns a token if credentials are valid.
     public function login(LoginUserRequest $request)
     {
         try {
@@ -63,5 +65,20 @@ class UserController extends Controller
                 'line' => $e->getLine(),
             ], 500);
         }
+    }
+
+
+    public function userRoles()
+    {
+        return [
+            [
+                'label' => RoleEnum::getRoleLabel(RoleEnum::Admin->value),
+                'role' => RoleEnum::Admin->value
+            ],
+            [
+                'label' => RoleEnum::getRoleLabel(RoleEnum::Author->value),
+                'role' => RoleEnum::Author->value
+            ],
+        ];
     }
 }

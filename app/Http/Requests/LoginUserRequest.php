@@ -25,7 +25,7 @@ class LoginUserRequest extends FormRequest
     {
         return [
             "email" => "required|email|exists:users,email",
-            "password" => "required",
+            "password" => "required|string",
         ];
     }
 
@@ -38,8 +38,10 @@ class LoginUserRequest extends FormRequest
     {
         return [
             "email.required" => "The user's email id is required",
+            "email.email" => "Please provide a valid email address.",
             "email.exists" => "The user's email id is invalid",
             "password.required" => "The user's password is required",
+            "password.string" => "The user's password must be a valid string",
         ];
     }
 

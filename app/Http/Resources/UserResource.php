@@ -19,9 +19,9 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'created_at' => date("d M, Y", strtotime($this->created_at)),
-            'updated_at' => date("d M, Y", strtotime($this->updated_at)),
-            'role' => RoleEnum::getRoleLabel($this->role),
+            'created_at' => date("Y-m-d H:i:s", strtotime($this->created_at)),
+            'updated_at' => date("Y-m-d H:i:s", strtotime($this->updated_at)),
+            'role' => empty($this->role) ? null : RoleEnum::getRoleLabel($this->role),
         ];
     }
 }
