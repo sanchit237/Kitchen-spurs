@@ -33,7 +33,7 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id" => "required|exists:categories,id",
+            "id" => ['required', Rule::exists('categories', 'id')->withoutTrashed()],
             "name" => ['required', Rule::unique('categories', 'name')->ignore($this->route('id'))],
         ];
     }

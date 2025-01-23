@@ -33,11 +33,11 @@ class UpdateArticleRequest extends FormRequest
     {
         return [
             "id" => "required|exists:articles,id",
-            "title" => "required",
-            "content" => "required",
-            "status" => "required",
+            "title" => "required|string",
+            "content" => "required|string",
+            "status" => ["required", "integer", Rule::in([1, 2, 3])],
             "categoryIds" => "required|array",
-            "categoryIds.*" => "exists:categories,id"
+            "categoryIds.*" => Rule::exists('categories', 'id')->withoutTrashed(),
         ];
     }
 
@@ -50,6 +50,8 @@ class UpdateArticleRequest extends FormRequest
     public function messages(): array
     {
         return [
+            "id.required" => "The article id is required",
+            "id.exists" => "The article id does not exist",
             "title.required" => "The article title is required",
             "content.required" => "The article content is required",
             "status.required" => "The article status is required",

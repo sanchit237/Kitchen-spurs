@@ -18,10 +18,15 @@ class ArticleResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'slug' => $this->slug,
             'content' => $this->content,
+            'summary' => $this->summary,
             'status' => ArticleStatusEnum::getStatusLabel($this->status),
-            'created_at' => date("d M, Y", strtotime($this->created_at)),
-            'updated_at' => date("d M, Y", strtotime($this->updated_at)),
+            'publishedDate' => $this->published_date,
+            'createdBy' => $this->user->name,
+            'categories' => $this->categories->pluck('name')->implode(', '),
+            'createdAt' => date("Y-m-d H:i:s", strtotime($this->created_at)),
+            'updatedAt' => date("Y-m-d H:i:s", strtotime($this->updated_at)),
         ];
     }
 }

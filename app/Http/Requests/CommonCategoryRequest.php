@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Enums\RoleEnum;
+use Illuminate\Validation\Rule;
 
 class CommonCategoryRequest extends FormRequest
 {
@@ -33,7 +34,7 @@ class CommonCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id" => "required|exists:categories,id",
+            "id" => ['required', Rule::exists('categories', 'id')->withoutTrashed()],
         ];
     }
 

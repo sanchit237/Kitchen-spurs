@@ -19,12 +19,12 @@ use App\Enums\ArticleStatusEnum;
 
 class ArticleController extends Controller
 {
-    //Create Article Function
+    // Creates a new article, associates it with categories, and handles errors with transaction management.
     public function createArticle(CreateArticleRequest $request)
     {
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
 
+        try {
             $title = $request->title;
             $content = $request->content;
             $status = $request->status;
@@ -102,13 +102,13 @@ class ArticleController extends Controller
 
             // Conditional check if start and end date is passed or either is passed
             $articles->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
-                $query->whereBetween("published_date", [$startDate, date('Y-m-d 23:59:59', strtotime($endDate))]);
+                $query->whereBetween('created_at', [$startDate, date('Y-m-d 23:59:59', strtotime($endDate))]);
             })
             ->when($startDate && !$endDate, function ($query) use ($startDate) {
-                $query->where("published_date", ">=", $startDate);
+                $query->where('created_at', '>=', $startDate);
             })
             ->when(!$startDate && $endDate, function ($query) use ($endDate) {
-                $query->where("published_date", "<=", date('Y-m-d 23:59:59', strtotime($endDate)));
+                $query->where('created_at', '<=', date('Y-m-d 23:59:59', strtotime($endDate)));
             });
 
             //Final query

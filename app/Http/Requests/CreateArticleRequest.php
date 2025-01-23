@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
+
 
 class CreateArticleRequest extends FormRequest
 {
@@ -24,11 +26,11 @@ class CreateArticleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => "required",
-            "content" => "required",
-            "status" => "required",
+            "title" => "required|string",
+            "content" => "required|string",
+            "status" => ["required", "integer", Rule::in([1, 2])],
             "categoryIds" => "required|array",
-            "categoryIds.*" => "exists:categories,id"
+            "categoryIds.*" => Rule::exists('categories', 'id')->withoutTrashed(),
         ];
     }
 
@@ -42,8 +44,12 @@ class CreateArticleRequest extends FormRequest
     {
         return [
             "title.required" => "The article title is required",
+            "title.string" => "The article status must be a valid string",
             "content.required" => "The article content is required",
+            "content.string" => "The article content must be a valid string",
             "status.required" => "The article status is required",
+            "status.integer" => "The article status must be an integer.",
+            "status.in" => "The article status must be one of the following: draft (1) or published (2)",
             "categoryIds.required" => "Category IDs are required.",
             "categoryIds.array" => "Category IDs must be an array.",
             "categoryIds.*.exists" => "The selected category is invalid.",
