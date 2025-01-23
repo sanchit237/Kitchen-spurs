@@ -25,7 +25,7 @@ class CreateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => "required|unique:categories,name",
+            "name" => "required|string|unique:categories,name",
         ];
     }
 
@@ -39,6 +39,7 @@ class CreateCategoryRequest extends FormRequest
         return [
             "name.required" => "The category name is required",
             "name.unique" => "The category name should be unique",
+            "name.string" => "The category name should be valid string",
         ];
     }
 

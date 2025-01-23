@@ -44,7 +44,7 @@ class UserController extends Controller
         }
     }
 
-
+    // Logs out the authenticated user by deleting their current access token.
     public function logout()
     {
         try {
@@ -67,7 +67,7 @@ class UserController extends Controller
         }
     }
 
-
+    // Returns a list of user roles with their labels and corresponding values.
     public function userRoles()
     {
         return [

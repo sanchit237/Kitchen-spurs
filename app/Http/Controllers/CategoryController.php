@@ -13,12 +13,12 @@ use App\Http\Requests\CommonCategoryRequest;
 
 class CategoryController extends Controller
 {
-
+    // Creates a new category in the database and handles errors with transaction support.
     public function createCategory(CreateCategoryRequest $request)
     {
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
 
+        try {
             $createCategory = Category::create([
                 "name" => $request->name,
             ]);
@@ -43,7 +43,7 @@ class CategoryController extends Controller
         }
     }
 
-
+    // Retrieves all categories
     public function getCategories(Request $request)
     {
         try {
@@ -64,7 +64,7 @@ class CategoryController extends Controller
         }
     }
 
-
+    // Retrieves a specific category by its ID
     public function getCategory(CommonCategoryRequest $request, $id)
     {
         try {
@@ -85,12 +85,12 @@ class CategoryController extends Controller
         }
     }
 
-
+    // Updates an existing category by its ID with the provided data and handles errors with transaction management.
     public function updateCategory(UpdateCategoryRequest $request, $id)
     {
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
 
+        try {
             $categoryName = $request->name;
 
             $category = Category::find($id);
@@ -118,12 +118,12 @@ class CategoryController extends Controller
         }
     }
 
-
+    // Deletes a specific category by its ID and handles errors with transaction management.
     public function deleteCategory(CommonCategoryRequest $request, $id)
     {
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
 
+        try {
             $category = Category::find($id);
 
             $category->delete();
@@ -146,5 +146,4 @@ class CategoryController extends Controller
             ], 500);
         }
     }
-
 }
