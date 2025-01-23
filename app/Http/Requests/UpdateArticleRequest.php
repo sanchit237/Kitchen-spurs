@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class UpdateArticleRequest extends FormRequest
 {
@@ -53,8 +54,12 @@ class UpdateArticleRequest extends FormRequest
             "id.required" => "The article id is required",
             "id.exists" => "The article id does not exist",
             "title.required" => "The article title is required",
+            "title.string" => "The article status must be a valid string",
             "content.required" => "The article content is required",
+            "content.string" => "The article content must be a valid string",
             "status.required" => "The article status is required",
+            "status.integer" => "The article status must be an integer.",
+            "status.in" => "The article status must be one of the following: draft (1), published (2), or archived (3).",
             "categoryIds.required" => "Category IDs are required.",
             "categoryIds.array" => "Category IDs must be an array.",
             "categoryIds.*.exists" => "The selected category is invalid.",

@@ -70,7 +70,7 @@ class ArticleController extends Controller
         }
     }
 
-    //Fetch All Articles Function
+    // Retrieves a paginated list of articles with optional filters for status, categories, created date range.
     public function getArticles(Request $request)
     {
         try {
@@ -129,7 +129,7 @@ class ArticleController extends Controller
         }
     }
 
-    //Fetch Single Article Function
+    // Retrieves a single article, ensuring the user has permission based on their role or ownership of the article.
     public function getArticle(CommonArticleRequest $request, $id)
     {
         try {
@@ -161,9 +161,9 @@ class ArticleController extends Controller
     //Update Article Function
     public function updateArticle(UpdateArticleRequest $request, $id)
     {
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
 
+        try {
             $title = $request->title;
             $content = $request->content;
             $status = $request->status;
@@ -179,7 +179,7 @@ class ArticleController extends Controller
                 ], 403);
             }
 
-            if ($status === ArticleStatus::Published->value && !$article->published_date) {
+            if ($status === ArticleStatusEnum::Published->value && !$article->published_date) {
                 $publishedDate = now();
             }
 
@@ -191,6 +191,15 @@ class ArticleController extends Controller
             ]);
 
             $article->categories()->sync($categoryIds);
+
+            //Dispatch jobs for slug and summary generation based on conditions
+            // if ($article->title !== $title || $article->content !== $content) {
+            //     ArticleSlug::dispatch($article);
+            // }
+
+            // if ($article->content !== $title) {
+            //     ArticleSummary::dispatch($article);
+            // }
 
             DB::commit();
 
@@ -211,12 +220,12 @@ class ArticleController extends Controller
         }
     }
 
-    //Delete Article Function
+    // Deletes an article if the user has permission based on their role or ownership of the article.
     public function deleteArticle(CommonArticleRequest $request, $id)
     {
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
 
+        try {
             $user = Auth::user();
 
             $article = Article::find($id);
