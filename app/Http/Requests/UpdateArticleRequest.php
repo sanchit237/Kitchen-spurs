@@ -32,6 +32,7 @@ class UpdateArticleRequest extends FormRequest
     public function rules(): array
     {
         return [
+            "id" => "required|exists:articles,id",
             "title" => "required",
             "content" => "required",
             "status" => "required",

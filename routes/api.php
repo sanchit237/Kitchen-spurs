@@ -30,19 +30,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [UserController::class, 'logout']);
 
     Route::prefix('categories')->controller(CategoryController::class)->group(function () {
-        Route::post('/', 'createCategory');
-        Route::get('/', 'getCategories');
-        Route::get('{id}', 'getCategory');
-        Route::post('{id}', 'updateCategory');
-        Route::delete('{id}', 'deleteCategory');
+        Route::post('create', 'createCategory');
+        Route::get('list', 'getCategories');
+        Route::get('detail/{id}', 'getCategory');
+        Route::post('update/{id}', 'updateCategory');
+        Route::delete('delete/{id}', 'deleteCategory');
     });
 
 
     Route::prefix('articles')->controller(ArticleController::class)->group(function () {
-        Route::post('/', 'createArticle');
-        Route::get('/', 'getArticles');
-        Route::get('{id}', 'getArticle');
-        Route::post('{id}', 'updateArticle');
-        Route::delete('{id}', 'deleteArticle');
+        Route::post('create', 'createArticle');
+        Route::post('list', 'getArticles');
+        Route::get('detail/{id}', 'getArticle');
+        Route::post('update/{id}', 'updateArticle');
+        Route::delete('delete{id}', 'deleteArticle');
     });
 });

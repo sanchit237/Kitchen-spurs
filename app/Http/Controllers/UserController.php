@@ -20,7 +20,9 @@ class UserController extends Controller
             if ($loginUser && Hash::check($request->password, $loginUser->password)) {
                 $token = $loginUser->createToken('user-token')->plainTextToken;
             } else {
-                throw new Exception('Invalid credentials', 401);
+                return response()->json([
+                    'message' => 'Invalid Credentials',
+                ], 401);
             }
 
             return response()->json([

@@ -11,10 +11,15 @@ use App\Http\Requests\CreateArticleRequest;
 use App\Http\Requests\CommonArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
 use App\Http\Resources\ArticleResource;
+use App\Jobs\ArticleSlug;
+use App\Jobs\ArticleSummary;
+use App\Enums\RoleEnum;
+use App\Enums\ArticleStatusEnum;
 
 
 class ArticleController extends Controller
 {
+    //Create Article Function
     public function createArticle(CreateArticleRequest $request)
     {
         try {
@@ -23,17 +28,27 @@ class ArticleController extends Controller
             $title = $request->title;
             $content = $request->content;
             $status = $request->status;
-            $userId = $request->userId;
+            $userId = Auth::id();
             $categoryIds = $request->categoryIds;
+            $publishedDate = null;
+
+            if ($status === ArticleStatusEnum::Published->value) {
+                $publishedDate = now();
+            }
 
             $createArticle = Article::create([
                 "title" => $title,
                 "content" => $content,
                 "status" => $status,
+                "published_date" => $publishedDate,
                 "user_id" => $userId,
             ]);
 
             $createArticle->categories()->attach($categoryIds);
+
+            //Dispatch jobs for slug and summary generation
+            // ArticleSlug::dispatch($createArticle);
+            // ArticleSummary::dispatch($createArticle);
 
             DB::commit();
 
@@ -55,13 +70,52 @@ class ArticleController extends Controller
         }
     }
 
+    //Fetch All Articles Function
     public function getArticles(Request $request)
     {
         try {
-            $articles = Article::all();
+            $user = Auth::user();
+            $perPage = $request->query('perPage', 10);
+            $status = $request->status;
+            $categoryIds = $request->categoryIds;
+            $startDate = $request->startDate;
+            $endDate = $request->endDate;
+
+            $articles = Article::with(['categories', 'user']);
+
+            //check if role is author
+            if ($user->role === RoleEnum::Author->value) {
+                $articles->where('user_id', $user->id);
+            }
+
+            // Filter by status
+            $articles->when($status, function($query) use ($status) {
+                $query->where('status', $status);
+            });
+
+            //Filter by categories
+            $articles->when($categoryIds, function($query) use ($categoryIds) {
+                $query->whereHas('categories', function($query) use ($categoryIds) {
+                    $query->whereIn('categories.id', $categoryIds);
+                });
+            });
+
+            // Conditional check if start and end date is passed or either is passed
+            $articles->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween("published_date", [$startDate, date('Y-m-d 23:59:59', strtotime($endDate))]);
+            })
+            ->when($startDate && !$endDate, function ($query) use ($startDate) {
+                $query->where("published_date", ">=", $startDate);
+            })
+            ->when(!$startDate && $endDate, function ($query) use ($endDate) {
+                $query->where("published_date", "<=", date('Y-m-d 23:59:59', strtotime($endDate)));
+            });
+
+            //Final query
+            $articlesResult = $articles->latest()->paginate($perPage);
 
             return response()->json([
-                "data" => ArticleResource::collection($articles),
+                "data" => ArticleResource::collection($articlesResult)->response()->getData(true),
             ], 200);
         }
         catch(Exception $e) {
@@ -75,11 +129,19 @@ class ArticleController extends Controller
         }
     }
 
-
+    //Fetch Single Article Function
     public function getArticle(CommonArticleRequest $request, $id)
     {
         try {
+            $user = Auth::user();
+
             $article = Article::find($id);
+
+            if ($user->role !== RoleEnum::Admin->value && $article->user_id !== $user->id) {
+                return response()->json([
+                    "message" => "You do not have permission to access this article",
+                ], 403);
+            }
 
             return response()->json([
                 "data" => new ArticleResource($article),
@@ -96,19 +158,39 @@ class ArticleController extends Controller
         }
     }
 
-
+    //Update Article Function
     public function updateArticle(UpdateArticleRequest $request, $id)
     {
         try {
             DB::beginTransaction();
 
-            $categoryName = $request->name;
+            $title = $request->title;
+            $content = $request->content;
+            $status = $request->status;
+            $categoryIds = $request->categoryIds;
+            $publishedDate = null;
+            $user = Auth::user();
 
             $article = Article::find($id);
 
+            if ($user->role !== RoleEnum::Admin->value && $article->user_id !== $user->id) {
+                return response()->json([
+                    "message" => "You do not have permission to update this article",
+                ], 403);
+            }
+
+            if ($status === ArticleStatus::Published->value && !$article->published_date) {
+                $publishedDate = now();
+            }
+
             $article->update([
-                "name" => $categoryName,
+                "title" => $title,
+                "content" => $content,
+                "status" => $status,
+                "published_date" => $publishedDate,
             ]);
+
+            $article->categories()->sync($categoryIds);
 
             DB::commit();
 
@@ -129,13 +211,21 @@ class ArticleController extends Controller
         }
     }
 
-
+    //Delete Article Function
     public function deleteArticle(CommonArticleRequest $request, $id)
     {
         try {
             DB::beginTransaction();
 
+            $user = Auth::user();
+
             $article = Article::find($id);
+
+            if ($user->role !== RoleEnum::Admin->value && $article->user_id !== $user->id) {
+                return response()->json([
+                    "message" => "You do not have permission to delete this article",
+                ], 403);
+            }
 
             $article->delete();
 
