@@ -47,8 +47,8 @@ class ArticleController extends Controller
             $createArticle->categories()->attach($categoryIds);
 
             //Dispatch jobs for slug and summary generation
-            // ArticleSlug::dispatch($createArticle);
-            // ArticleSummary::dispatch($createArticle);
+            ArticleSlug::dispatch($createArticle);
+            ArticleSummary::dispatch($createArticle);
 
             DB::commit();
 
@@ -158,7 +158,7 @@ class ArticleController extends Controller
         }
     }
 
-    //Update Article Function
+    // Updates an article with the given data, ensures proper permissions
     public function updateArticle(UpdateArticleRequest $request, $id)
     {
         DB::beginTransaction();
@@ -168,7 +168,7 @@ class ArticleController extends Controller
             $content = $request->content;
             $status = $request->status;
             $categoryIds = $request->categoryIds;
-            $publishedDate = null;
+
             $user = Auth::user();
 
             $article = Article::find($id);
@@ -179,9 +179,16 @@ class ArticleController extends Controller
                 ], 403);
             }
 
+            //Update published date based on status
+            $publishedDate = $article->published_date;
+
             if ($status === ArticleStatusEnum::Published->value && !$article->published_date) {
                 $publishedDate = now();
             }
+
+            // Store existing values for comparison
+            $existingTitle = $article->title;
+            $existingContent = $article->content;
 
             $article->update([
                 "title" => $title,
@@ -193,13 +200,13 @@ class ArticleController extends Controller
             $article->categories()->sync($categoryIds);
 
             //Dispatch jobs for slug and summary generation based on conditions
-            // if ($article->title !== $title || $article->content !== $content) {
-            //     ArticleSlug::dispatch($article);
-            // }
+            if ($existingTitle !== $title || $existingContent !== $content) {
+                ArticleSlug::dispatch($article);
+            }
 
-            // if ($article->content !== $title) {
-            //     ArticleSummary::dispatch($article);
-            // }
+            if ($existingContent !== $content) {
+                ArticleSummary::dispatch($article);
+            }
 
             DB::commit();
 
