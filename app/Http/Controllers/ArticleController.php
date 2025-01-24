@@ -263,4 +263,26 @@ class ArticleController extends Controller
             ], 500);
         }
     }
+
+
+    // Returns a list of article status with their labels and corresponding values.
+    public function articleStatus()
+    {
+        $status = [
+            [
+                'label' => ArticleStatusEnum::getStatusLabel(ArticleStatusEnum::Draft->value),
+                'status' => ArticleStatusEnum::Draft->value
+            ],
+            [
+                'label' => ArticleStatusEnum::getStatusLabel(ArticleStatusEnum::Published->value),
+                'status' => ArticleStatusEnum::Published->value
+            ],
+            [
+                'label' => ArticleStatusEnum::getStatusLabel(ArticleStatusEnum::Archived->value),
+                'status' => ArticleStatusEnum::Archived->value
+            ],
+        ];
+
+        return response()->json(['data' => $status], 200);
+    }
 }

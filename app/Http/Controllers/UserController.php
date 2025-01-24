@@ -70,7 +70,7 @@ class UserController extends Controller
     // Returns a list of user roles with their labels and corresponding values.
     public function userRoles()
     {
-        return [
+        $roles = [
             [
                 'label' => RoleEnum::getRoleLabel(RoleEnum::Admin->value),
                 'role' => RoleEnum::Admin->value
@@ -80,5 +80,7 @@ class UserController extends Controller
                 'role' => RoleEnum::Author->value
             ],
         ];
+
+        return response()->json(['data' => $roles], 200);
     }
 }
