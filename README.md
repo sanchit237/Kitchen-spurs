@@ -79,8 +79,8 @@ Below versions were used for development:
     Start the Laravel queue worker:
     - php artisan queue:work
 
-5. **Start the Development Server: Run the Laravel development server:**:
-    php artisan serve
+5. **Start the Development Server: Run the Laravel development server**:
+    - php artisan serve
 
 
 ### **API Documentation**
