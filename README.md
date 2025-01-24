@@ -1,66 +1,91 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Simple CMS Application API with AI-Powered Features
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a CMS API built using **Laravel 10** and **MySQL**, featuring **user authentication**, **role-based access**, **article management**, and AI-powered features for generating **slugs** and **summaries** for articles.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### **User Authentication**
+- **Login API**: User can log in with credentials.
+- **Logout API**: User can log out.
+- **Seeder**: Automatically creates `Admin` and `Author` users for easy testing.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### **Content Management**
+- **CRUD Operations for Articles**:
+  - **Title**: Article title.
+  - **Slug**: Automatically generated unique slug based on the title and content.
+  - **Content**: Main body content of the article.
+  - **Summary**: AI-generated summary (2-3 sentences).
+  - **Category**: Multiple categories allowed for each article.
+  - **Status**: Article status can be `Draft`, `Published`, or `Archived`.
+  - **Published Date**: The date when the article is published.
+  - **Author**: The user who created the article.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Slug and Summary Generation**:
+  - Slug is generated asynchronously using a Language Model (LLM) based on the article’s title and content.
+  - Summary is also generated asynchronously by the LLM to create a 2-3 sentence summary of the article.
 
-## Learning Laravel
+### **Category Management** (Admin Only)
+- Admin can **CRUD categories** for organizing articles.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### **Article Listing & Filtering**
+- Filter articles based on **Category**, **Status**, and **Date Range**.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### **Role-Based Access**
+- **Admin**: Can manage all articles and categories.
+- **Author**: Can only manage their own articles.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+Follow these steps to set up the project:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### **Prerequisites**
+Ensure the following are installed:
+- **PHP** 8.1 or later.
+- **Composer** (for PHP dependencies).
+- **MySQL** (database).
+- **WAMP** (Windows development environment for Apache, MySQL, and PHP).
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### **Versions**
+Below versions were used for development:
+- **PHP** 8.2.0.
+- **Composer** 2.6.4.
+- **MySQL** 8.0.31.
+- **Laravel** 10.48.25.
 
-## Contributing
+### **Setup**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. **Clone the Repository**:
+   - git clone https://github.com/sanchit237/Kitchen-spurs.git
+   - cd Kitchen-spurs
 
-## Code of Conduct
+2. **Install Dependencies: Install PHP and Laravel dependencies**:
+    - composer install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+3. **Set Up Environment Variables**:
+    - you can copy .env.example file and create a .env file , also i will share the file via email as well.
+    - update the database credentials in the .env file.
+    - DB_DATABASE=kitchen_spurs
+    - QUEUE_CONNECTION=database
+    - OPENAI_API_KEY
 
-## Security Vulnerabilities
+4. **Run Migrations: Migrate the database to create necessary tables**:
+    - php artisan migrate
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. **Seed the Database:**:
+    - php artisan db:seed
 
-## License
+5. **Run Jobs: Ensure that your queue system is running for asynchronous slug and summary generation**:
+    Start the Laravel queue worker:
+    - php artisan queue:work
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. **Start the Development Server: Run the Laravel development server:**:
+    php artisan serve
+
+
+### **API Documentation**
+- Postman folder is present in the root which consists of josn files
+- You can import the json files in postman to get the api documentation
+    1. Environment file
+    2. Collection file
+
