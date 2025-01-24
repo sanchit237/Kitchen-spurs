@@ -89,3 +89,25 @@ Below versions were used for development:
     1. Environment file
     2. Collection file
 
+
+### **Enum Files**
+
+**ArticleStatusEnum**
+    - This enum is used to define the possible statuses for an article. The available statuses are:
+
+    - Draft: Value 1 – Article is in draft mode and not yet published.
+    - Published: Value 2 – Article is published and visible to users.
+    - Archived: Value 3 – Article is archived and no longer active.
+
+    - Method:
+    - getStatusLabel(int $status): Returns a human-readable label for the article status.
+
+**RoleEnum**
+    - This enum defines the available user roles within the system. The available roles are:
+
+    - Admin: Value 1 – Has full access to manage all articles and categories.
+    - Author: Value 2 – Can only manage their own articles.
+
+    - Method:
+    - getRoleLabel(int $role): Returns a human-readable label for the user role.
+
